@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 // import SideNav, { NavItem, NavIcon, NavText } from "@trendmicro/react-sidenav";
-import "@trendmicro/react-sidenav/dist/react-sidenav.css";
+// import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { faHome, faCog, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 // import { useState } from "react";

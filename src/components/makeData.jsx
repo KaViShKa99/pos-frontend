@@ -1,68 +1,54 @@
 export const data = [
-    {
-      id: '9s41rp',
-      firstName: 'Kelvin',
-      lastName: 'Langosh',
-      email: 'Jerod14@hotmail.com',
-      age: 19,
-      state: 'Ohio',
-    },
-    {
-      id: '08m6rx',
-      firstName: 'Molly',
-      lastName: 'Purdy',
-      email: 'Hugh.Dach79@hotmail.com',
-      age: 37,
-      state: 'Rhode Island',
-    },
-    {
-      id: '5ymtrc',
-      firstName: 'Henry',
-      lastName: 'Lynch',
-      email: 'Camden.Macejkovic@yahoo.com',
-      age: 20,
-      state: 'California',
-    },
-    {
-      id: 'ek5b97',
-      firstName: 'Glenda',
-      lastName: 'Douglas',
-      email: 'Eric0@yahoo.com',
-      age: 38,
-      state: 'Montana',
-    },
-    {
-      id: 'xxtydd',
-      firstName: 'Leone',
-      lastName: 'Williamson',
-      email: 'Ericka_Mueller52@yahoo.com',
-      age: 19,
-      state: 'Colorado',
-    },
-    {
-      id: 'wzxj9m',
-      firstName: 'Mckenna',
-      lastName: 'Friesen',
-      email: 'Veda_Feeney@yahoo.com',
-      age: 34,
-      state: 'New York',
-    },
-    {
-      id: '21dwtz',
-      firstName: 'Wyman',
-      lastName: 'Jast',
-      email: 'Melvin.Pacocha@yahoo.com',
-      age: 23,
-      state: 'Montana',
-    },
-    {
-      id: 'o8oe4k',
-      firstName: 'Janick',
-      lastName: 'Willms',
-      email: 'Delfina12@gmail.com',
-      age: 25,
-      state: 'Nebraska',
-    },
+  {
+    "product_name": "Widget A",
+    "category": "Electronics",
+    "brand": "ABC",
+    "supplier": "XYZ Company",
+    "cost_price": 10.50,
+    "retail_price": 19.99,
+    "quantity": 50,
+    "maximum_stock": 100
+  },
+  {
+    "product_name": "Widget B",
+    "category": "Home Decor",
+    "brand": "DEF",
+    "supplier": "PQR Inc.",
+    "cost_price": 8.75,
+    "retail_price": 14.99,
+    "quantity": 25,
+    "maximum_stock": 50
+  },
+  {
+    "product_name": "Widget C",
+    "category": "Clothing",
+    "brand": "GHI",
+    "supplier": "LMN Corporation",
+    "cost_price": 12.35,
+    "retail_price": 29.99,
+    "quantity": 10,
+    "maximum_stock": 20
+  },
+  {
+    "product_name": "Widget D",
+    "category": "Beauty",
+    "brand": "JKL",
+    "supplier": "UVW Ltd.",
+    "cost_price": 5.25,
+    "retail_price": 9.99,
+    "quantity": 100,
+    "maximum_stock": 200
+  },
+  {
+    "product_name": "Widget E",
+    "category": "Sports",
+    "brand": "MNO",
+    "supplier": "RST Co.",
+    "cost_price": 18.50,
+    "retail_price": 39.99,
+    "quantity": 75,
+    "maximum_stock": 150
+  }
   ];
   
   // 50 US states array
