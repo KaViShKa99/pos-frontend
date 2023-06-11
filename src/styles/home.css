@@ -114,4 +114,11 @@
     font-weight: lighter;
 }
 
-.products-table-title {}
+.products-table-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 35px;
+    color: #889874;
+    padding-bottom: 20px;
+}

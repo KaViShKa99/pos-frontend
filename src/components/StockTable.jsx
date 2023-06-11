@@ -87,58 +87,89 @@ const StockTable = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "id",
-        header: "ID",
+        accessorKey: "product_name",
+        header: "Product Name",
         enableColumnOrdering: false,
         enableEditing: false, //disable editing on this column
         enableSorting: false,
         size: 80,
       },
       {
-        accessorKey: "firstName",
-        header: "First Name",
+        accessorKey: "category",
+        header: "Category",
         size: 140,
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
           ...getCommonEditTextFieldProps(cell),
         }),
       },
       {
-        accessorKey: "lastName",
-        header: "Last Name",
+        accessorKey: "brand",
+        header: "Brand",
         size: 140,
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
           ...getCommonEditTextFieldProps(cell),
         }),
       },
       {
-        accessorKey: "email",
-        header: "Email",
+        accessorKey: "supplier",
+        header: "Supplier",
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
           ...getCommonEditTextFieldProps(cell),
           type: "email",
         }),
       },
       {
-        accessorKey: "age",
-        header: "Age",
+        accessorKey: "cost_price",
+        header: "Cost Price",
         size: 80,
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
           ...getCommonEditTextFieldProps(cell),
           type: "number",
         }),
       },
+      
       {
-        accessorKey: "state",
-        header: "State",
-        muiTableBodyCellEditTextFieldProps: {
-          select: true, //change to select for a dropdown
-          children: states.map((state) => (
-            <MenuItem key={state} value={state}>
-              {state}
-            </MenuItem>
-          )),
-        },
+        accessorKey: "retail_price",
+        header: "Retail Price",
+        size: 80,
+        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+          ...getCommonEditTextFieldProps(cell),
+          type: "number",
+        }),
       },
+      
+      {
+        accessorKey: "quantity",
+        header: "Quantity",
+        size: 80,
+        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+          ...getCommonEditTextFieldProps(cell),
+          type: "number",
+        }),
+      },
+      
+      {
+        accessorKey: "maximum_stock",
+        header: "Maximum Stock",
+        size: 80,
+        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+          ...getCommonEditTextFieldProps(cell),
+          type: "number",
+        }),
+      },
+      
+      // {
+      //   accessorKey: "state",
+      //   header: "State",
+      //   muiTableBodyCellEditTextFieldProps: {
+      //     select: true, //change to select for a dropdown
+      //     children: states.map((state) => (
+      //       <MenuItem key={state} value={state}>
+      //         {state}
+      //       </MenuItem>
+      //     )),
+      //   },
+      // },
     ],
     [getCommonEditTextFieldProps]
   );
@@ -212,7 +243,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
 
   return (
     <Dialog open={open}>
-      <DialogTitle textAlign="center">Create New Account</DialogTitle>
+      <DialogTitle textAlign="center">Add Product</DialogTitle>
       <DialogContent>
         <form onSubmit={(e) => e.preventDefault()}>
           <Stack
@@ -238,7 +269,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
       <DialogActions sx={{ p: "1.25rem" }}>
         <Button onClick={onClose}>Cancel</Button>
         <Button color="secondary" onClick={handleSubmit} variant="contained">
-          Create New Account
+          Add Product
         </Button>
       </DialogActions>
     </Dialog>
