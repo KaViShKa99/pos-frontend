@@ -16,7 +16,7 @@ import {
 import { Delete, Edit } from "@mui/icons-material";
 import { data, states } from "./makeData";
 
-const StockTable = () => {
+const InvoiceManageTable = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [tableData, setTableData] = useState(() => data);
   const [validationErrors, setValidationErrors] = useState({});
@@ -183,7 +183,7 @@ const StockTable = () => {
           // <button onClick={() => handleButtonClick(cell.value)}>
           //   {cell.value} add bill
           // </button>
-          <a href="/another-page" className="text-blue-500 hover:text-blue-700 font-bold underline">{cell.value} add bill</a>
+          <a href="/invoice" className="text-blue-500 hover:text-blue-700 font-bold underline">{cell.value} add bill</a>
         ),
       },
 
@@ -315,4 +315,4 @@ const validateEmail = (email) =>
     );
 const validateAge = (age) => age >= 18 && age <= 50;
 
-export default StockTable;
+export default InvoiceManageTable;

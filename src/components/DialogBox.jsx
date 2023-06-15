@@ -1,67 +1,61 @@
 import {
-    Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    IconButton,
-    MenuItem,
-    Stack,
-    TextField,
-    Tooltip,
-  } from "@mui/material";
-  import { Delete, Edit } from "@mui/icons-material";
-  import React, { useCallback, useMemo, useState } from "react";
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+} from "@mui/material";
+import { useState } from "react";
 
+const DialogBox = ({ open, columns, onClose, onSubmit, title }) => {
 
-const DialogBox = ({ open, columns, onClose, onSubmit }) => {
-    const [values, setValues] = useState(() =>
-      columns.reduce((acc, column) => {
-        acc[column.accessorKey ?? ""] = "";
-        return acc;
-      }, {})
-    );
+  const [values, setValues] = useState({});
   
-    const handleSubmit = () => {
-      //put your validation logic here
-      onSubmit(values);
-      onClose();
-    };
-  
-    return (
-      <Dialog open={open}>
-        <DialogTitle textAlign="center">Bill</DialogTitle>
-        <DialogContent>
-          <form onSubmit={(e) => e.preventDefault()}>
-            <Stack
-              sx={{
-                width: "100%",
-                minWidth: { xs: "300px", sm: "360px", md: "400px" },
-                gap: "1.5rem",
-              }}
-            >
-              {columns.map((column,i) => (
-                <TextField
-                  key={i}
-                  // key={column.accessorKey}
-                  label={column.header}
-                  name={column.accessorKey}
-                  onChange={(e) =>
-                    setValues({ ...values, [e.target.name]: e.target.value })
-                  }
-                />
-              ))}
-            </Stack>
-          </form>
-        </DialogContent>
-        <DialogActions sx={{ p: "1.25rem" }}>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button color="secondary" onClick={handleSubmit} variant="contained">
-            Add Bill
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
+  const handleSubmit = () => {
+    onSubmit(values);
+    onClose();
   };
-  export default DialogBox;
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+  };
+
+  return (
+    <Dialog open={open}>
+      <DialogTitle textAlign="center">{title}</DialogTitle>
+      <DialogContent>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <Stack
+            sx={{
+              width: "100%",
+              minWidth: { xs: "300px", sm: "360px", md: "400px" },
+              gap: "1.5rem",
+            }}
+          >
+            {columns.map((column, i) => (
+              <TextField
+                key={i}
+                label={column.header}
+                name={column.accessor}
+                onChange={handleInputChange}
+              />
+            ))}
+          </Stack>
+        </form>
+      </DialogContent>
+      <DialogActions sx={{ p: "1.25rem" }}>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button color="secondary" onClick={handleSubmit} variant="contained">
+          Add {title}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+export default DialogBox;

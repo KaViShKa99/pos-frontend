@@ -1,0 +1,24 @@
+.invoice-table-container {
+    /* background-color: rgb(254, 158, 158); */
+    width: 100%;
+    height: 30rem;
+    padding: 50px 50px 50px 50px;
+}
+
+.invoice-table-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 35px;
+    color: #889874;
+    padding-bottom: 20px;
+}
+
+.add-invoice-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 20px 20px 20px;
+    /* background-color: bisque; */
+    padding-bottom: 20px;
+}

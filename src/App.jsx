@@ -5,7 +5,8 @@ import { createBrowserRouter , RouterProvider } from 'react-router-dom'
 import Home from './pages/home'
 import Login from './pages/login'
 import SalesManagerHome from './pages/SalesManagerHome'
-
+// import Invoice from './components/Invoice'
+import Invoice from './components/Invoice'
 
 const store = createStore(modles)
 
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
   {
     path: '/sales-manager-home',
     Component: SalesManagerHome
+  },
+  {
+    path: '/invoice',
+    Component: Invoice
   },
 ])
 
