@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState,useEffect } from "react";
 import { MaterialReactTable } from "material-react-table";
 import {
   Box,
@@ -14,17 +14,62 @@ import {
   Tooltip,
 } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
-import { data, states } from "./makeData";
+import { useStoreState, useStoreActions } from "easy-peasy";
+import moment from 'moment';
+
 
 const InvoiceManageTable = () => {
+
+  const manageInvoiceTableData = useStoreState((state) => state.manageInvoiceTableData);
+  const getManageInvoiceTableData = useStoreActions(
+    (actions) => actions.getManageInvoiceTableData
+  );
+  const addManageInvoiceTableData = useStoreActions(
+    (actions) => actions.addManageInvoiceTableData
+  );
+  const deleteManageInvoiceTableData = useStoreActions(
+    (actions) => actions.deleteManageInvoiceTableData
+  );
+
+
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [tableData, setTableData] = useState(() => data);
   const [validationErrors, setValidationErrors] = useState({});
+  
+  const [tableData, setTableData] = useState([]);
+
+  
+
+  useEffect(() => {
+    getManageInvoiceTableData();
+  }, []);
+
+  useEffect(() => {
+    if (manageInvoiceTableData.tabaleData) {
+      const updatedTableData = manageInvoiceTableData.tabaleData.map((item) => {
+        const createdAtFormatted = moment(item.created_at).format('YYYY-MM-DD HH:mm:ss');
+        return {
+          ...item,
+          created_at: createdAtFormatted,
+        };
+      });
+      setTableData(updatedTableData);
+    }
+  }, [manageInvoiceTableData.tabaleData]);
+
+  
+
 
   const handleCreateNewRow = (values) => {
-    tableData.push(values);
-    setTableData([...tableData]);
+    addManageInvoiceTableData(values)
+    // setCreateRowTrigger((prev) => !prev);
+    // getManageInvoiceTableData();
+    // tableData.push(values);
+    // setTableData([...tableData]);
   };
+  useEffect(() => {
+    getManageInvoiceTableData();
+  }, [handleCreateNewRow]);
+  
 
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
     if (!Object.keys(validationErrors).length) {
@@ -42,10 +87,12 @@ const InvoiceManageTable = () => {
   const handleDeleteRow = useCallback(
     (row) => {
       if (
-        !confirm(`Are you sure you want to delete ${row.getValue("firstName")}`)
+        !confirm(`Are you sure you want to delete ${row}`)
       ) {
         return;
       }
+      console.log('a' ,row.original.invoice_id);
+      deleteManageInvoiceTableData(row.original.invoice_id)
       //send api delete request here, then refetch or update local table data for re-render
       tableData.splice(row.index, 1);
       setTableData([...tableData]);
@@ -87,57 +134,13 @@ const InvoiceManageTable = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "bill_id",
+        accessorKey: "display_id",
         header: "Bill Invoice",
         enableColumnOrdering: false,
         enableEditing: false, //disable editing on this column
         enableSorting: false,
         size: 80,
       },
-      // {
-      //   accessorKey: "product_name",
-      //   header: "Product Name",
-      //   size: 140,
-      //   muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-      //     ...getCommonEditTextFieldProps(cell),
-      //   }),
-      // },
-      // {
-      //   accessorKey: "quantity",
-      //   header: "Quantity",
-      //   size: 140,
-      //   muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-      //     ...getCommonEditTextFieldProps(cell),
-      //   }),
-      // },
-      // {
-      //   accessorKey: "unit_price",
-      //   header: "Unit Price",
-      //   muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-      //     ...getCommonEditTextFieldProps(cell),
-      //     type: "email",
-      //   }),
-      // },
-      // {
-      //   accessorKey: "subtotal",
-      //   header: "Subtotal",
-      //   size: 80,
-      //   muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-      //     ...getCommonEditTextFieldProps(cell),
-      //     type: "number",
-      //   }),
-      // },
-
-      // {
-      //   accessorKey: "discount",
-      //   header: "Discount",
-      //   size: 80,
-      //   muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-      //     ...getCommonEditTextFieldProps(cell),
-      //     type: "number",
-      //   }),
-      // },
-
       {
         accessorKey: "customer_name",
         header: "Customer Name",
@@ -148,7 +151,7 @@ const InvoiceManageTable = () => {
         }),
       },
       {
-        accessorKey: "date",
+        accessorKey: "created_at",
         header: "Date",
         size: 80,
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
@@ -235,15 +238,15 @@ const InvoiceManageTable = () => {
             </Tooltip>
           </Box>
         )}
-        // renderTopToolbarCustomActions={() => (
-        //   <Button
-        //     color="secondary"
-        //     onClick={() => setCreateModalOpen(true)}
-        //     variant="contained"
-        //   >
-        //     Add Product
-        //   </Button>
-        // )}
+        renderTopToolbarCustomActions={() => (
+          <Button
+            color="secondary"
+            onClick={() => setCreateModalOpen(true)}
+            variant="contained"
+          >
+            Add Product
+          </Button>
+        )}
       />
       <CreateNewAccountModal
         columns={columns}
@@ -269,10 +272,11 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
     onSubmit(values);
     onClose();
   };
+  const columnsToCheck = ["display_id", "created_at", "total", "bill"];
 
   return (
     <Dialog open={open}>
-      <DialogTitle textAlign="center">Add Product</DialogTitle>
+      <DialogTitle textAlign="center">Add Invoice</DialogTitle>
       <DialogContent>
         <form onSubmit={(e) => e.preventDefault()}>
           <Stack
@@ -282,7 +286,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
               gap: "1.5rem",
             }}
           >
-            {columns.map((column) => (
+            {/* {columns.map((column) => (
               <TextField
                 key={column.accessorKey}
                 label={column.header}
@@ -291,14 +295,33 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
               />
-            ))}
+            ))} */}
+            
+            {columns.map((column) => {
+              if (columnsToCheck.includes(column.accessorKey)) {
+                return null; 
+              }
+
+              return (
+                <TextField
+                  key={column.accessorKey}
+                  label={column.header}
+                  name={column.accessorKey}
+                  onChange={(e) =>
+                    setValues({ ...values, [e.target.name]: e.target.value })
+                  }
+                />
+              );
+            })}
+
+
           </Stack>
         </form>
       </DialogContent>
       <DialogActions sx={{ p: "1.25rem" }}>
         <Button onClick={onClose}>Cancel</Button>
         <Button color="secondary" onClick={handleSubmit} variant="contained">
-          Add Product
+          Add Invoice
         </Button>
       </DialogActions>
     </Dialog>

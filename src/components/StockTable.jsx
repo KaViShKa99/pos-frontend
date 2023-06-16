@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import { MaterialReactTable } from "material-react-table";
 import {
   Box,
@@ -14,14 +14,42 @@ import {
   Tooltip,
 } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
-import { data, states } from "./makeData";
+import { useStoreState, useStoreActions } from "easy-peasy";
 
 const StockTable = () => {
+  const stcokTableData = useStoreState((state) => state.stcokTableData);
+  const getStockTableData = useStoreActions(
+    (actions) => actions.getStockTableData
+  );
+  const deleteStockTableData = useStoreActions(
+    (actions) => actions.deleteStockTableData
+  );
+  const addStockTableData = useStoreActions(
+    (actions) => actions.addStockTableData
+  );
+  const updateStockTableData = useStoreActions(
+    (actions) => actions.updateStockTableData
+  );
+
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [tableData, setTableData] = useState(() => data);
+  // const [tableData, setTableData] = useState(() => data);
+  // const [tableData, setTableData] = useState(() => stcokTableData.tabaleData);
   const [validationErrors, setValidationErrors] = useState({});
 
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    getStockTableData();
+  }, []);
+
+  useEffect(() => {
+    if (stcokTableData.tabaleData) {
+      setTableData(stcokTableData.tabaleData);
+    }
+  }, [stcokTableData.tabaleData]);
+
   const handleCreateNewRow = (values) => {
+    addStockTableData(values);
     tableData.push(values);
     setTableData([...tableData]);
   };
@@ -29,7 +57,20 @@ const StockTable = () => {
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
     if (!Object.keys(validationErrors).length) {
       tableData[row.index] = values;
-      //send/receive api updates here, then refetch or update local table data for re-render
+
+      const updateData = {
+        productId: values.product_id,
+        product_name: values.product_name,
+        category: values.category,
+        brand: values.brand,
+        supplier: values.supplier,
+        cost_price: values.cost_price,
+        retail_price: values.retail_price,
+        quantity: values.quantity,
+        maximum_stock: values.maximum_stock,
+      };
+
+      updateStockTableData(updateData);
       setTableData([...tableData]);
       exitEditingMode(); //required to exit editing mode and close modal
     }
@@ -42,10 +83,14 @@ const StockTable = () => {
   const handleDeleteRow = useCallback(
     (row) => {
       if (
-        !confirm(`Are you sure you want to delete ${row.getValue("firstName")}`)
+        (console.log(row.original.product_id),
+        !confirm(
+          `Are you sure you want to delete ${row.getValue("product_name")}`
+        ))
       ) {
         return;
       }
+      deleteStockTableData(row.original.product_id);
       //send api delete request here, then refetch or update local table data for re-render
       tableData.splice(row.index, 1);
       setTableData([...tableData]);
@@ -87,10 +132,19 @@ const StockTable = () => {
   const columns = useMemo(
     () => [
       {
+        accessorKey: "product_id", // New column for product ID
+        header: "Product ID",
+        enableColumnOrdering: false,
+        enableEditing: false,
+        enableSorting: false,
+        size: 80,
+        hidden: true,
+      },
+      {
         accessorKey: "product_name",
         header: "Product Name",
         enableColumnOrdering: false,
-        enableEditing: false, //disable editing on this column
+        enableEditing: true,
         enableSorting: false,
         size: 80,
       },
@@ -127,7 +181,7 @@ const StockTable = () => {
           type: "number",
         }),
       },
-      
+
       {
         accessorKey: "retail_price",
         header: "Retail Price",
@@ -137,7 +191,7 @@ const StockTable = () => {
           type: "number",
         }),
       },
-      
+
       {
         accessorKey: "quantity",
         header: "Quantity",
@@ -147,7 +201,7 @@ const StockTable = () => {
           type: "number",
         }),
       },
-      
+
       {
         accessorKey: "maximum_stock",
         header: "Maximum Stock",
@@ -157,7 +211,7 @@ const StockTable = () => {
           type: "number",
         }),
       },
-      
+
       // {
       //   accessorKey: "state",
       //   header: "State",
@@ -173,7 +227,6 @@ const StockTable = () => {
     ],
     [getCommonEditTextFieldProps]
   );
-
   return (
     <>
       <MaterialReactTable
@@ -183,8 +236,13 @@ const StockTable = () => {
               align: "center",
             },
             size: 120,
+            enableHiding: false,
           },
+          
         }}
+        enableHiding={false}
+        enableResetOrder={false}
+        initialState={{ columnVisibility: { product_id: false } }}
         columns={columns}
         data={tableData}
         editingMode="modal" //default
@@ -216,7 +274,11 @@ const StockTable = () => {
           </Button>
         )}
       />
-      <CreateNewAccountModal
+      {/* {console.log("aa ", data)} */}
+      {/* {console.log('ccc ',stcokTableData.length)} */}
+      {/* {console.log("ddd ", tableData.length)} */}
+
+      <CreateNewProductModal
         columns={columns}
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
@@ -227,7 +289,7 @@ const StockTable = () => {
 };
 
 //example of creating a mui dialog modal for creating new rows
-export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
+export const CreateNewProductModal = ({ open, columns, onClose, onSubmit }) => {
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
       acc[column.accessorKey ?? ""] = "";
@@ -253,16 +315,23 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
               gap: "1.5rem",
             }}
           >
-            {columns.map((column) => (
-              <TextField
-                key={column.accessorKey}
-                label={column.header}
-                name={column.accessorKey}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
-              />
-            ))}
+            {columns.map((column) => {
+              if (column.accessorKey === "product_id") {
+                return null; 
+              }
+
+              return (
+                <TextField
+                  key={column.accessorKey}
+                  label={column.header}
+                  name={column.accessorKey}
+                  onChange={(e) =>
+                    setValues({ ...values, [e.target.name]: e.target.value })
+                  }
+                />
+              );
+            })}
+
           </Stack>
         </form>
       </DialogContent>

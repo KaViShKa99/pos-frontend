@@ -4,46 +4,42 @@ import Table from "../components/InvoiceManageTable";
 import "../styles/salesMangerHome.css";
 import Nav from "../components/NavBar";
 import DialogBox from "../components/DialogBox";
+import { useStoreState, useStoreActions } from "easy-peasy";
 
-import { useMemo, useState } from "react";
-import { data } from "../components/makeData";
+import { useMemo, useState, useEffect } from "react";
 
 const SalesManagerHome = () => {
-  const columns = useMemo(() => [
-      {
-        accessor: "customer_name",
-        header: "Customer Name",
-        enableColumnOrdering: false,
-        enableEditing: false,
-        enableSorting: false,
-        size: 160,
-      },
-  
-    // {
-    //   accessor: "total",
-    //   header: "Total",
-    //   enableColumnOrdering: false,
-    //   enableEditing: false,
-    //   enableSorting: false,
-    //   size: 100,
-    // },
-      {
-        accessor: "payment_method",
-        header: "Payment Method",
-        enableColumnOrdering: false,
-        enableEditing: false,
-        enableSorting: false,
-        size: 160,
-      },
-  ]);
-  const [tableData, setTableData] = useState(() => data);
+  // const inputFields = useMemo(() => [
+  //   {
+  //     accessor: "customer_name",
+  //     header: "Customer Name",
+  //     enableColumnOrdering: false,
+  //     enableEditing: false,
+  //     enableSorting: false,
+  //     size: 160,
+  //   },
+  //   {
+  //     accessor: "payment_method",
+  //     header: "Payment Method",
+  //     enableColumnOrdering: false,
+  //     enableEditing: false,
+  //     enableSorting: false,
+  //     size: 160,
+  //   },
+  // ]);
+  // const [tableData, setTableData] = useState(() => data);
 
-  const [createModalOpen, setCreateModalOpen] = useState(false);
+  // const [createModalOpen, setCreateModalOpen] = useState(false);
 
-  const handleCreateNewRow = (values) => {
-    tableData.push(values);
-    setTableData([...tableData]);
-  };
+  // const addManageInvoiceTableData = useStoreActions(
+  //   (actions) => actions.addManageInvoiceTableData
+  // );
+
+  // const handleCreateNewRow = (values) => {
+  //   addManageInvoiceTableData(values);
+  //   // tableData.push(values);
+  //   // setTableData([...tableData]);
+  // };
 
   const { t } = useTranslation();
 
@@ -58,21 +54,21 @@ const SalesManagerHome = () => {
         <p className="invoice-table-title">MANAGE INVOICES</p>
         <Table />
         <div className="add-invoice-btn">
-          <Button
+          {/* <Button
             color="secondary"
             onClick={() => setCreateModalOpen(true)}
             variant="contained"
           >
             Add Invoice
-          </Button>
+          </Button> */}
         </div>
-        <DialogBox
-          columns={columns}
+        {/* <DialogBox
+          columns={inputFields}
           open={createModalOpen}
           onClose={() => setCreateModalOpen(false)}
           onSubmit={handleCreateNewRow}
           title={"Invoice"}
-        />
+        /> */}
       </div>
     </div>
   );

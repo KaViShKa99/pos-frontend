@@ -8,6 +8,7 @@ import SalesManagerHome from './pages/SalesManagerHome'
 // import Invoice from './components/Invoice'
 import Invoice from './components/Invoice'
 
+
 const store = createStore(modles)
 
 const router = createBrowserRouter([

@@ -1,20 +1,14 @@
 import { useTranslation } from "react-i18next";
-// import SideNav, { NavItem, NavIcon, NavText } from "@trendmicro/react-sidenav";
-// import "@trendmicro/react-sidenav/dist/react-sidenav.css";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faHome, faCog, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
-// import { useState } from "react";
-import Table from "../components/StockTable"
+import Table from "../components/StockTable";
 import "../styles/home.css";
-import Nav from "../components/NavBar"
-
+import Nav from "../components/NavBar";
 
 const Home = () => {
+  
   const { t } = useTranslation();
-
   return (
     <div className="main-container">
-      {/* <p className=""> {t("add")}</p> */}
+      {/* <p className=""> {t("add")}  </p> */}
       <div className="nav-bar">
         <Nav />
       </div>
