@@ -225,7 +225,7 @@ export default function PrimarySearchAppBar({ notification }) {
             </div>
           ))}
 
-        {notification?.length === 0 && (
+        {arr?.length === 0 && (
           <div style={{ marginBottom: "16px" }}>
             <div
               style={{
@@ -395,8 +395,8 @@ export default function PrimarySearchAppBar({ notification }) {
                 color="inherit"
                 onClick={handleNotficationMenuOpen}
               >
-                {notification && (
-                  <Badge badgeContent={notification.length} color="error">
+                {arr && (
+                  <Badge badgeContent={arr.length} color="error">
                     <NotificationsIcon />
                   </Badge>
                 )}

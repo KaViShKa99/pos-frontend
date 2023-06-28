@@ -1,6 +1,6 @@
 import { Document, Page, View, Text } from "@react-pdf/renderer";
 
-const Bill = ({tableData,overallTotal,currentTime}) => {
+const Bill = ({tableData,overallTotal,currentTime,invoiceDetails}) => {
     const styles = {
         billContainer: {
           padding: 20,
@@ -29,6 +29,16 @@ const Bill = ({tableData,overallTotal,currentTime}) => {
         },
         billTitle: {
           fontSize: 24,
+          fontWeight: "bold",
+          marginBottom: 10,
+        },
+        invoiceTitle: {
+          fontSize: 24,
+          fontWeight: "bold",
+          marginBottom: 5,
+        },
+        customerName: {
+          fontSize: 20,
           fontWeight: "bold",
           marginBottom: 10,
         },
@@ -89,6 +99,8 @@ const Bill = ({tableData,overallTotal,currentTime}) => {
           <View style={styles.billContainer}>
             <View style={styles.billHeader}>
               <View style={styles.billHeaderLeft}>
+                <Text style={styles.invoiceTitle}>{invoiceDetails.display_id}</Text>
+                <Text style={styles.customerName}>{invoiceDetails.customer_name}</Text>
                 <Text style={styles.companyName}>Company Name</Text>
                 <Text>Address, City, State, Zip</Text>
                 <Text>Phone: 123-456-7890</Text>
@@ -111,8 +123,8 @@ const Bill = ({tableData,overallTotal,currentTime}) => {
               <View style={styles.tableBody}>
                 {tableData.map((product, i) => {
                   const subtotal = product.unit_price * product.quantity;
-                  const total = subtotal - subtotal * product.discount;
-                  overallTotal += total;
+                  const total = subtotal - subtotal * (product.discount / 100);
+                  // overallTotal += total;
                   return (
                     <View key={i} style={styles.tableRow}>
                       <Text style={styles.tableCell}>{product.product_name}</Text>
@@ -120,18 +132,18 @@ const Bill = ({tableData,overallTotal,currentTime}) => {
                       <Text style={styles.tableCell}>{product.unit_price}</Text>
                       <Text style={styles.tableCell}>{subtotal}</Text>
                       <Text style={styles.tableCell}>{product.discount}</Text>
-                      <Text style={styles.tableCell}>{total}</Text>
+                      <Text style={styles.tableCell}>{total.toFixed(2)}</Text>
                     </View>
                   );
                 })}
               </View>
               <View style={styles.tableFooter}>
                 <Text style={styles.totalLabel} colSpan={5}>Total:</Text>
-                <Text style={styles.totalValue}>Rs: {overallTotal}</Text>
+                <Text style={styles.totalValue}>Rs: {overallTotal.toFixed(2)}</Text>
               </View>
             </View>
             <View style={styles.billTotal}>
-              <Text>Amount Due: Rs {overallTotal}</Text>
+              <Text>Amount Due: Rs {overallTotal.toFixed(2)}</Text>
             </View>
             <View style={styles.billFooter}>
               <Text>Thank you for your purchase!</Text>

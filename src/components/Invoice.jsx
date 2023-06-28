@@ -141,17 +141,14 @@ const Invoice = () => {
       const newQuantity = newData.quantity;
 
       const productDetails = await getSelectedProductDetails(values.product_id);
-      console.log("", productDetails.quantity, values.quantity);
 
       if (productDetails.quantity >= values.quantity) {
         if (oldQuantity < newQuantity) {
-          console.log('add ');
           addStockOutProductQuantity({
             ...newData,
             quantity: newQuantity - oldQuantity,
           });
         } else if (oldQuantity > newQuantity) {
-          console.log('reduce ');
           reduceStockOutProductQuantity({
             ...newData,
             quantity: oldQuantity - newQuantity,
@@ -221,6 +218,7 @@ const Invoice = () => {
         tableData={tableData}
         overallTotal={overallTotal}
         currentTime={currentTime}
+        invoiceDetails={invoiceDetails}
       />
     ).toBlob();
     saveAs(blob, billName);
