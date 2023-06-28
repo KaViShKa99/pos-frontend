@@ -13,20 +13,23 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import { Delete, Edit } from "@mui/icons-material";
+import { Delete, Edit,Add } from "@mui/icons-material";
 import { useStoreState, useStoreActions } from "easy-peasy";
 import { ToastContainer, toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
-const StockTable = () => {
-  const stcokTableData = useStoreState((state) => state.stcokTableData);
-  const getStockTableData = useStoreActions(
-    (actions) => actions.getStockTableData
+const VehicleManageTable = () => {
+  
+  const manageVehiclesTableData = useStoreState((state) => state.manageVehiclesTableData);
+  
+  const getManageVehiclesTableData = useStoreActions(
+    (actions) => actions.getManageVehiclesTableData
   );
-  const deleteStockTableData = useStoreActions(
-    (actions) => actions.deleteStockTableData
+  const deleteManageVehiclesTableData = useStoreActions(
+    (actions) => actions.deleteManageVehiclesTableData
   );
-  const addStockTableData = useStoreActions(
-    (actions) => actions.addStockTableData
+  const addManageVehicleTableData = useStoreActions(
+    (actions) => actions.addManageVehicleTableData
   );
   const updateStockTableData = useStoreActions(
     (actions) => actions.updateStockTableData
@@ -40,64 +43,48 @@ const StockTable = () => {
   const getProductNameList = useStoreActions(
     (state) => state.getProductNameList
   );
-  const getSearchProductDetails = useStoreActions(
-    (state) => state.getSearchProductDetails
+  const createdVehicleNumberList = useStoreState(
+    (state) => state.createdVehicleNumberList
   );
 
-  const getSearchStockOutProductDetails = useStoreActions(
-    (state) => state.getSearchStockOutProductDetails
+  const getCreatedVehicleNumberList = useStoreActions(
+    (state) => state.getCreatedVehicleNumberList
   );
+
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
 
   const [tableData, setTableData] = useState([]);
+  const [createdVehicleNumbers, setCreatedVehicleNumbers] = useState([]);
+
 
   useEffect(() => {
-    getStockTableData();
+    getManageVehiclesTableData();
+    getCreatedVehicleNumberList();
+
   }, []);
 
   useEffect(() => {
-    if (stcokTableData.tabaleData) {
-      const fetchData = async () => {
-        const updatedTableData = await Promise.all(
-          stcokTableData.tabaleData.map(async (item) => {
-            const selectedProductDetails = await getSearchProductDetails(
-              item.product_id
-            );
-            const stockOutProduct = await getSearchStockOutProductDetails(
-              item.product_id
-            );
-            const total = selectedProductDetails.quantity;
-            const stockOut = stockOutProduct.quantity;
-            const iStock = total - stockOut
-
-            return {
-              ...item,
-              inStock: iStock,
-            };
-          })
-        );
-        setTableData(updatedTableData);
-        // setTableData(stcokTableData.tabaleData);
-      };
-
-      fetchData();
+    if(createdVehicleNumberList){
+      const vehicleNumbers = Object.values(createdVehicleNumberList).map((data) => data.vehicle_number);
+      setCreatedVehicleNumbers(vehicleNumbers);
     }
-  }, [stcokTableData.tabaleData]);
+  }, [createdVehicleNumberList]);
+
+  useEffect(() => {
+    if (manageVehiclesTableData.tabaleData) {
+      setTableData(manageVehiclesTableData.tabaleData);
+    }
+  }, [manageVehiclesTableData.tabaleData]);
 
   useEffect(() => {
     getProductNameList();
   }, [tableData]);
 
   const handleCreateNewRow = async (values) => {
-    const { message, data } = await addStockTableData(values);
+    const { message, data } = await addManageVehicleTableData(values);
     toast.success(message, { autoClose: 1500 });
-    await addStockOutDetails({
-      product_id: data.product_id,
-      product_name: data.product_name,
-    });
-    getProductNameList();
     setTableData([...tableData, data]);
   };
 
@@ -130,15 +117,14 @@ const StockTable = () => {
   const handleDeleteRow = useCallback(
     (row) => {
       if (
-        (console.log(row.original.product_id),
+        (
         !confirm(
-          `Are you sure you want to delete ${row.getValue("product_name")}`
+          `Are you sure you want to delete Vehicle Number ${row.original.vehicle_number}`
         ))
       ) {
         return;
       }
-      deleteStockTableData(row.original.product_id);
-      deleteStockOutDetails(row.original.product_id);
+      deleteManageVehiclesTableData(row.original.id);
 
       tableData.splice(row.index, 1);
       setTableData([...tableData]);
@@ -180,8 +166,8 @@ const StockTable = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "product_id", // New column for product ID
-        header: "Product ID",
+        accessorKey: "vehicle_id", // New column for product ID
+        header: "Vehicle Id",
         enableColumnOrdering: false,
         enableEditing: false,
         enableSorting: false,
@@ -189,87 +175,22 @@ const StockTable = () => {
         // hidden: true,
       },
       {
-        accessorKey: "product_name",
-        header: "Product Name",
+        accessorKey: "vehicle_number",
+        header: "Vehicle Number",
         enableColumnOrdering: false,
         enableEditing: true,
         enableSorting: false,
         size: 80,
       },
       {
-        accessorKey: "category",
-        header: "Category",
-        size: 140,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-        }),
-      },
-      {
-        accessorKey: "brand",
-        header: "Brand",
-        size: 140,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-        }),
-      },
-      {
-        accessorKey: "supplier",
-        header: "Supplier",
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-          type: "email",
-        }),
-      },
-      {
-        accessorKey: "cost_price",
-        header: "Cost Price",
+        accessorKey: "items",
+        header: "Number Of Items",
         size: 80,
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
           ...getCommonEditTextFieldProps(cell),
-          type: "number",
         }),
       },
-
-      {
-        accessorKey: "retail_price",
-        header: "Retail Price",
-        size: 80,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-          type: "number",
-        }),
-      },
-
-      {
-        accessorKey: "inStock",
-        header: "In Stock",
-        size: 80,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-          type: "number",
-        }),
-        enableEditing: false,
-        enableSorting: false,
-      },
-      {
-        accessorKey: "quantity",
-        header: "Total Quantity",
-        size: 80,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-          type: "number",
-        }),
-      },
-
-      {
-        accessorKey: "minimum_stock",
-        header: "Minimum Stock",
-        size: 80,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-          type: "number",
-        }),
-      },
+     
     ],
     [getCommonEditTextFieldProps]
   );
@@ -293,7 +214,7 @@ const StockTable = () => {
         enableHiding={false}
         enableResetOrder={false}
         initialState={{
-          columnVisibility: { product_id: false },
+          columnVisibility: { vehicle_id: false },
           density: "compact",
         }}
         columns={columns}
@@ -305,16 +226,40 @@ const StockTable = () => {
         onEditingRowCancel={handleCancelRowEdits}
         renderRowActions={({ row, table }) => (
           <Box sx={{ display: "flex", gap: "1rem" }}>
-            <Tooltip arrow placement="left" title="Edit">
-              <IconButton onClick={() => table.setEditingRow(row)}>
-                <Edit />
-              </IconButton>
-            </Tooltip>
-            <Tooltip arrow placement="right" title="Delete">
+             <Tooltip arrow placement="right" title="Delete">
               <IconButton color="error" onClick={() => handleDeleteRow(row)}>
                 <Delete />
               </IconButton>
             </Tooltip>
+            <Tooltip arrow placement="left" title="Edit">
+              {/* <IconButton onClick={() => table.setEditingRow(row)}>
+                <Edit />
+              </IconButton> */}
+
+
+              {!createdVehicleNumbers.includes(row.original.vehicle_number) ? (
+                <Button
+                  style={{ fontSize: "12px" }}
+                  component={Link}
+                  to={`/vehicle-products/${row.original.vehicle_number}`}
+                  startIcon={<Add />}
+                >
+                  Add Products
+                </Button>
+              ) : (
+                <Button
+                  style={{ fontSize: "12px" ,color:"green"}}
+                  component={Link}
+                  to={`/vehicle-products/${row.original.vehicle_number}`}
+                  // startIcon={<Show />}
+                >
+                  Show Products
+                </Button>
+               )} 
+
+
+            </Tooltip>
+           
           </Box>
         )}
         renderTopToolbarCustomActions={() => (
@@ -323,7 +268,7 @@ const StockTable = () => {
             onClick={() => setCreateModalOpen(true)}
             variant="contained"
           >
-            Add Product
+            Add Vehicle
           </Button>
         )}
       />
@@ -368,7 +313,7 @@ export const CreateNewProductModal = ({ open, columns, onClose, onSubmit }) => {
 
   return (
     <Dialog open={open}>
-      <DialogTitle textAlign="center">Add Product</DialogTitle>
+      <DialogTitle textAlign="center">Add Vehicle</DialogTitle>
       <DialogContent>
         <form onSubmit={(e) => e.preventDefault()}>
           <Stack
@@ -377,9 +322,10 @@ export const CreateNewProductModal = ({ open, columns, onClose, onSubmit }) => {
               minWidth: { xs: "300px", sm: "360px", md: "400px" },
               gap: "1.5rem",
             }}
+            style={{marginTop:"10px"}}
           >
             {columns.map((column) => {
-              if (column.accessorKey === "product_id") {
+              if (column.accessorKey === "vehicle_id" || column.accessorKey === "items") {
                 return null;
               }
 
@@ -392,14 +338,7 @@ export const CreateNewProductModal = ({ open, columns, onClose, onSubmit }) => {
                     setValues({ ...values, [e.target.name]: e.target.value })
                   }
                   required
-                  // ={
-                  //   column.accessorKey === "cost_price" ||
-                  //   column.accessorKey === "minimum_stock" ||
-                  //   column.accessorKey === "product_name" ||
-                  //   column.accessorKey === "quantity" ||
-                  //   column.accessorKey === "retail_price" ||
-                  //   column.accessorKey === "supplier"
-                  // }
+                  
                 />
               );
             })}
@@ -409,7 +348,7 @@ export const CreateNewProductModal = ({ open, columns, onClose, onSubmit }) => {
       <DialogActions sx={{ p: "1.25rem" }}>
         <Button onClick={onClose}>Cancel</Button>
         <Button color="secondary" onClick={handleSubmit} variant="contained">
-          Add Product
+        Add Vehicle
         </Button>
       </DialogActions>
     </Dialog>
@@ -426,4 +365,4 @@ const validateEmail = (email) =>
     );
 const validateAge = (age) => age >= 18 && age <= 50;
 
-export default StockTable;
+export default VehicleManageTable;

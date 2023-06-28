@@ -1,4 +1,7 @@
 {
-    "add": "ඇඩ් කරන්න",
-    "welcome": "Welcome to my app."
+    "total": "මුලු එකතුව",
+    "inStock": "ගබඩාවේ ඇත",
+    "stockOut": "ගබඩාවේ නැත",
+    "add": "එකතුකරන්න",
+    "products": "භාණ්ඩ"
 }

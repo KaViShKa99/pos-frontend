@@ -43,7 +43,7 @@ p {
 }
 
 table {
-    width: 100%;
+    width: 50%;
     border-collapse: collapse;
 }
 
@@ -90,9 +90,11 @@ table th {
 
 .display-bill {
     padding: 50px 50px 50px 50px;
+    width: 50%;
 }
 
 .bill-table-title {
+    padding: 50px;
     display: flex;
     justify-content: center;
     align-items: center;

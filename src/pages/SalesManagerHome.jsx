@@ -3,7 +3,7 @@ import { Button } from "@mui/material";
 import Table from "../components/InvoiceManageTable";
 import "../styles/salesMangerHome.css";
 import Nav from "../components/NavBar";
-import DialogBox from "../components/DialogBox";
+import DialogBox from "../components/AddBillDetailsDialogBox";
 import { useStoreState, useStoreActions } from "easy-peasy";
 
 import { useMemo, useState, useEffect } from "react";

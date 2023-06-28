@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -16,18 +16,19 @@ import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useNavigate,useLocation  } from 'react-router-dom';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#FFA500", 
+      main: "#FFA500",
     },
   },
   components: {
     MuiIconButton: {
       styleOverrides: {
         root: {
-          color: 'white',
+          color: "white",
         },
       },
     },
@@ -74,15 +75,52 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function PrimarySearchAppBar() {
+export default function PrimarySearchAppBar({ notification }) {
+  
+  const navigate = useNavigate();
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const token  = localStorage.getItem("token")
+  const [arr, setArr] = useState([notification]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  // const [isNotificationMenuOpen, setNotificationMenuOpen] = useState(null);
 
-  const isMenuOpen = Boolean(anchorEl);
+  const isNotificationMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
+  useEffect(() => {
+    // if(arr.length > 0){
+    setArr(notification);
+    // }
+  }, [notification]);
+
+  const handleNotficationMenuOpen = (event) => {
+    // setNotificationMenuOpen(Boolean(event.currentTarget));
+    notification && setAnchorEl(event.currentTarget);
+  };
+  const handleSalsemangerView = ()=>{
+    navigate('/sales-manager-home')
+  }
+  const handleHomeView = ()=>{
+    navigate('/')
+  }
+
+  const handleCloseNotifications = (id) => {
+    // setAnchorEl(null);
+    const storedNotification = localStorage.getItem("notification");
+    const parsedNotification = JSON.parse(storedNotification);
+    parsedNotification.splice(id, 1);
+    arr.splice(id, 1);
+    setArr([...arr]);
+    localStorage.setItem("notification", JSON.stringify(parsedNotification));
+
+    // console.log(" ", parsedNotification);
+  };
+
   const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
+    // setAnchorEl(event.currentTarget);
   };
 
   const handleMobileMenuClose = () => {
@@ -91,6 +129,7 @@ export default function PrimarySearchAppBar() {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+    // localStorage.removeItem('notification')
     handleMobileMenuClose();
   };
 
@@ -98,25 +137,126 @@ export default function PrimarySearchAppBar() {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const menuId = "primary-search-account-menu";
-  const renderMenu = (
+  // const menuId = "primary-search-account-menu";
+  // const renderMenu = (
+  //   <Menu
+  //     anchorEl={anchorEl}
+  //     anchorOrigin={{
+  //       vertical: "top",
+  //       horizontal: "right",
+  //     }}
+  //     id={menuId}
+  //     keepMounted
+  //     transformOrigin={{
+  //       vertical: "top",
+  //       horizontal: "right",
+  //     }}
+  //     open={isMenuOpen}
+  //     onClose={handleMenuClose}
+  //   >
+  //     <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+  //     <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+  //   </Menu>
+  // );
+  const openNotificationMenu = (
     <Menu
       anchorEl={anchorEl}
       anchorOrigin={{
         vertical: "top",
-        horizontal: "right",
+        horizontal: "center",
       }}
-      id={menuId}
+      // id={menuId}
       keepMounted
       transformOrigin={{
         vertical: "top",
-        horizontal: "right",
+        horizontal: "center",
       }}
-      open={isMenuOpen}
+      open={isNotificationMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <div
+        className="notification-list"
+        style={{
+          width: "400px",
+          borderRadius: "4px",
+          backgroundColor: "#fff",
+          padding: "20px",
+          fontFamily: "Arial, sans-serif",
+        }}
+      >
+        <h2
+          style={{
+            fontSize: "18px",
+            marginBottom: "16px",
+            textAlign: "center",
+            fontWeight: "lighter",
+          }}
+        >
+          Notifications
+        </h2>
+
+        {notification &&
+          arr.map((notify, i) => (
+            <div key={i} style={{ marginBottom: "16px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "8px",
+                  backgroundColor: "#f3f7ff",
+                  borderRadius: "4px",
+                }}
+              >
+                <div>{notify}</div>
+                <button
+                  onClick={() => handleCloseNotifications(i)}
+                  style={{
+                    backgroundColor: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "#aaa",
+                    fontSize: "25px",
+                  }}
+                >
+                  x
+                </button>
+              </div>
+            </div>
+          ))}
+
+        {notification?.length === 0 && (
+          <div style={{ marginBottom: "16px" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "8px",
+                backgroundColor: "#f3f7ff",
+                borderRadius: "4px",
+              }}
+            >
+              <div>Not Found</div>
+            </div>
+          </div>
+        )}
+
+        <button
+          onClick={handleMenuClose}
+          style={{
+            backgroundColor: "#007bff",
+            color: "#fff",
+            padding: "8px 16px",
+            borderRadius: "4px",
+            border: "none",
+            cursor: "pointer",
+            fontSize: "14px",
+          }}
+        >
+          Close
+        </button>
+      </div>
     </Menu>
   );
 
@@ -137,27 +277,28 @@ export default function PrimarySearchAppBar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
+      {/* <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <Badge badgeContent={4} color="error">
             <MailIcon />
           </Badge>
         </IconButton>
         <p>Messages</p>
-      </MenuItem>
+      </MenuItem> */}
       <MenuItem>
         <IconButton
           size="large"
-          aria-label="show 17 new notifications"
+          aria-label="show 15 new notifications"
           color="inherit"
+          onClick={handleNotficationMenuOpen}
         >
-          <Badge badgeContent={17} color="error">
+          <Badge badgeContent={15} color="error">
             <NotificationsIcon />
           </Badge>
         </IconButton>
         <p>Notifications</p>
       </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
+      {/* <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           size="large"
           aria-label="account of current user"
@@ -168,7 +309,7 @@ export default function PrimarySearchAppBar() {
           <AccountCircle />
         </IconButton>
         <p>Profile</p>
-      </MenuItem>
+      </MenuItem> */}
     </Menu>
   );
 
@@ -190,7 +331,7 @@ export default function PrimarySearchAppBar() {
               variant="h6"
               noWrap
               component="div"
-              sx={{ display: { xs: "none", sm: "block" } ,color: 'white'}}
+              sx={{ display: { xs: "none", sm: "block" }, color: "white" }}
             >
               POS
             </Typography>
@@ -205,25 +346,64 @@ export default function PrimarySearchAppBar() {
           </Search> */}
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
+        
+                {token === "admin" && currentPath === '/' && <span
+                  style={{
+                    marginLeft: "10px",
+                    fontSize: "20px",
+                    backgroundColor: "#4CAF50",
+                    border: "none",
+                    color: "white",
+                    padding: "10px 20px",
+                    textAlign: "center",
+                    textDecoration: "none",
+                    display: "inline-block",
+                    fontSize: "16px",
+                    margin: "10px",
+                    cursor: "pointer",
+                    width: "200px",
+                  }}
+                  onClick={handleSalsemangerView}
+                >
+                  Go to Sales Manager
+                </span>}
+
+                {token === "admin" && currentPath !== '/' && <span
+                  style={{
+                    marginLeft: "10px",
+                    fontSize: "20px",
+                    backgroundColor: "#4CAF50",
+                    border: "none",
+                    color: "white",
+                    padding: "10px 20px",
+                    textAlign: "center",
+                    textDecoration: "none",
+                    display: "inline-block",
+                    fontSize: "16px",
+                    margin: "10px",
+                    cursor: "pointer",
+                    width: "200px",
+                  }}
+                  onClick={handleHomeView}
+                >
+                  Go to Home
+                </span>}
+              
               <IconButton
                 size="large"
-                aria-label="show 4 new mails"
+                aria-label="show 15 new notifications"
                 color="inherit"
+                onClick={handleNotficationMenuOpen}
               >
-                <Badge badgeContent={4} color="error">
-                  <MailIcon />
-                </Badge>
+                {notification && (
+                  <Badge badgeContent={notification.length} color="error">
+                    <NotificationsIcon />
+                  </Badge>
+                )}
+                {!notification && <NotificationsIcon />}
               </IconButton>
-              <IconButton
-                size="large"
-                aria-label="show 17 new notifications"
-                color="inherit"
-              >
-                <Badge badgeContent={17} color="error">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-              <IconButton
+
+              {/* <IconButton
                 size="large"
                 edge="end"
                 aria-label="account of current user"
@@ -233,7 +413,7 @@ export default function PrimarySearchAppBar() {
                 color="inherit"
               >
                 <AccountCircle />
-              </IconButton>
+              </IconButton> */}
             </Box>
             <Box sx={{ display: { xs: "flex", md: "none" } }}>
               <IconButton
@@ -250,7 +430,8 @@ export default function PrimarySearchAppBar() {
           </Toolbar>
         </AppBar>
         {renderMobileMenu}
-        {renderMenu}
+        {/* {renderMenu} */}
+        {notification && openNotificationMenu}
       </Box>
     </ThemeProvider>
   );

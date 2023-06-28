@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState,useEffect } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import { MaterialReactTable } from "material-react-table";
 import {
   Box,
@@ -13,14 +13,21 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import { Delete, Edit } from "@mui/icons-material";
+import { Delete, Edit, Add } from "@mui/icons-material";
 import { useStoreState, useStoreActions } from "easy-peasy";
-import moment from 'moment';
-
+import moment from "moment";
+import { Link } from "react-router-dom";
 
 const InvoiceManageTable = () => {
-
-  const manageInvoiceTableData = useStoreState((state) => state.manageInvoiceTableData);
+  const manageInvoiceTableDataUpdateID = useStoreState(
+    (state) => state.manageInvoiceTableDataUpdateID
+  );
+  const manageInvoiceTableData = useStoreState(
+    (state) => state.manageInvoiceTableData
+  );
+  const setManageInvoiceTableDataUpdateID = useStoreActions(
+    (state) => state.setManageInvoiceTableDataUpdateID
+  );
   const getManageInvoiceTableData = useStoreActions(
     (actions) => actions.getManageInvoiceTableData
   );
@@ -30,69 +37,95 @@ const InvoiceManageTable = () => {
   const deleteManageInvoiceTableData = useStoreActions(
     (actions) => actions.deleteManageInvoiceTableData
   );
+  const updateManageInvoiceTableData = useStoreActions(
+    (actions) => actions.updateManageInvoiceTableData
+  );
+  const getBillTotal = useStoreActions((actions) => actions.getBillTotal);
+  const totalSum = useStoreState((state) => state.totalSum);
 
+  const createdBillInoiceIdList = useStoreState(
+    (state) => state.createdBillInoiceIdList
+  );
+  const getCreatedBillInoiceIdList = useStoreActions(
+    (state) => state.getCreatedBillInoiceIdList
+  );
 
-  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [billUpdateModalOpen, setbillUpdateModalOpen] = useState(false);
+  const [addBillModalOpen, setaddBillModalOpen] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
-  
   const [tableData, setTableData] = useState([]);
-
-  
+  const [createdInvoiceId, setCreatedInvoiceId] = useState([]);
 
   useEffect(() => {
     getManageInvoiceTableData();
+    getCreatedBillInoiceIdList();
+    // console.log("ss ", getBillTotal("fb9963be-bd7b-4f62-b"));
   }, []);
 
   useEffect(() => {
+    if(createdBillInoiceIdList){
+      const invoiceIds = Object.values(createdBillInoiceIdList).map((data) => data.invoice_id);
+      setCreatedInvoiceId(invoiceIds);
+    }
+  }, [createdBillInoiceIdList]);
+
+  useEffect(() => {
     if (manageInvoiceTableData.tabaleData) {
+      
       const updatedTableData = manageInvoiceTableData.tabaleData.map((item) => {
-        const createdAtFormatted = moment(item.created_at).format('YYYY-MM-DD HH:mm:ss');
+        const createdAtFormatted = moment(item.created_at).format(
+          "YYYY-MM-DD HH:mm:ss"
+        );
+
+        //  console.log('x ',getBillTotal(item.invoice_id));
         return {
           ...item,
           created_at: createdAtFormatted,
         };
       });
+      // console.log('ww ',totalSum.tabaleData);
       setTableData(updatedTableData);
     }
   }, [manageInvoiceTableData.tabaleData]);
 
-  
+  const handleCreateNewRow = async (values) => {
+    const createdData = await addManageInvoiceTableData(values);
 
-
-  const handleCreateNewRow = (values) => {
-    addManageInvoiceTableData(values)
-    // setCreateRowTrigger((prev) => !prev);
-    // getManageInvoiceTableData();
-    // tableData.push(values);
-    // setTableData([...tableData]);
-  };
-  useEffect(() => {
-    getManageInvoiceTableData();
-  }, [handleCreateNewRow]);
-  
-
-  const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
-    if (!Object.keys(validationErrors).length) {
-      tableData[row.index] = values;
-      //send/receive api updates here, then refetch or update local table data for re-render
-      setTableData([...tableData]);
-      exitEditingMode(); //required to exit editing mode and close modal
-    }
+    const createdAtFormatted = moment(createdData.data.created_at).format(
+      "YYYY-MM-DD HH:mm:ss"
+    );
+    const updatedTableData = {
+      ...createdData.data,
+      created_at: createdAtFormatted,
+    };
+    setTableData([...tableData, updatedTableData]);
   };
 
-  const handleCancelRowEdits = () => {
-    setValidationErrors({});
+  const handleSaveUpdateRowValues = async (values) => {
+    const updateData = {
+      invoiceId: manageInvoiceTableDataUpdateID.invoiceId,
+      customerName: values.customer_name,
+      paymentMethod: values.payment_method,
+    };
+
+    const updatedData = await updateManageInvoiceTableData(updateData);
+    const createdAtFormatted = moment(updatedData.data.created_at).format(
+      "YYYY-MM-DD HH:mm:ss"
+    );
+    const updatedTableData = {
+      ...updatedData.data,
+      created_at: createdAtFormatted,
+    };
+    tableData[manageInvoiceTableDataUpdateID.rowId] = updatedTableData;
+    setTableData([...tableData]);
   };
 
   const handleDeleteRow = useCallback(
     (row) => {
-      if (
-        !confirm(`Are you sure you want to delete ${row}`)
-      ) {
+      if (!confirm(`Are you sure you want to delete ${row}`)) {
         return;
       }
-      console.log('a' ,row.original.invoice_id);
-      deleteManageInvoiceTableData(row.original.invoice_id)
+      deleteManageInvoiceTableData(row.original.invoice_id);
       //send api delete request here, then refetch or update local table data for re-render
       tableData.splice(row.index, 1);
       setTableData([...tableData]);
@@ -134,6 +167,15 @@ const InvoiceManageTable = () => {
   const columns = useMemo(
     () => [
       {
+        accessorKey: "invoice_id", // New column for product ID
+        header: "Id",
+        enableColumnOrdering: false,
+        enableEditing: false,
+        enableSorting: false,
+        size: 80,
+        // hidden: true,
+      },
+      {
         accessorKey: "display_id",
         header: "Bill Invoice",
         enableColumnOrdering: false,
@@ -145,66 +187,36 @@ const InvoiceManageTable = () => {
         accessorKey: "customer_name",
         header: "Customer Name",
         size: 80,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-          type: "number",
-        }),
+        
       },
       {
         accessorKey: "created_at",
         header: "Date",
         size: 80,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-          type: "number",
-        }),
+        enableEditing: false,
+       
       },
-      {
-        accessorKey: "total",
-        header: "Total",
-        size: 80,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-          type: "number",
-        }),
-      },
+     
 
       {
         accessorKey: "payment_method",
         header: "Payment Method",
         size: 80,
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-          type: "number",
-        }),
+      
       },
-      {
-        accessorKey: "bill",
-        header: "Bill",
-        size: 80,
-        Cell: ({ cell }) => (
-          // <button onClick={() => handleButtonClick(cell.value)}>
-          //   {cell.value} add bill
-          // </button>
-          <a href="/invoice" className="text-blue-500 hover:text-blue-700 font-bold underline">{cell.value} add bill</a>
-        ),
-      },
-
-      // {
-      //   accessorKey: "state",
-      //   header: "State",
-      //   muiTableBodyCellEditTextFieldProps: {
-      //     select: true, //change to select for a dropdown
-      //     children: states.map((state) => (
-      //       <MenuItem key={state} value={state}>
-      //         {state}
-      //       </MenuItem>
-      //     )),
-      //   },
-      // },
+      
     ],
     [getCommonEditTextFieldProps]
   );
+
+  const updateTable = (invoiceId, rowId) => {
+    const idData = {
+      invoiceId: invoiceId,
+      rowId: rowId,
+    };
+    setbillUpdateModalOpen(true);
+    setManageInvoiceTableDataUpdateID(idData);
+  };
 
   return (
     <>
@@ -217,17 +229,28 @@ const InvoiceManageTable = () => {
             size: 120,
           },
         }}
+        enableColumnFilterModes={false}
+        enableFullScreenToggle={false}
+        enableDensityToggle={false}
+        enableHiding={false}
+        enableResetOrder={false}
+        initialState={{
+          columnVisibility: { invoice_id: false },
+          density: "compact",
+        }}
         columns={columns}
         data={tableData}
         editingMode="modal" //default
         enableColumnOrdering
         enableEditing
-        onEditingRowSave={handleSaveRowEdits}
-        onEditingRowCancel={handleCancelRowEdits}
+        // onEditingRowSave={handleSaveRowEdits}
+        // onEditingRowCancel={handleCancelRowEdits}
         renderRowActions={({ row, table }) => (
           <Box sx={{ display: "flex", gap: "1rem" }}>
             <Tooltip arrow placement="left" title="Edit">
-              <IconButton onClick={() => table.setEditingRow(row)}>
+              <IconButton
+                onClick={() => updateTable(row.original.invoice_id, row.index)}
+              >
                 <Edit />
               </IconButton>
             </Tooltip>
@@ -236,30 +259,58 @@ const InvoiceManageTable = () => {
                 <Delete />
               </IconButton>
             </Tooltip>
+            <Tooltip arrow placement="bottom" title="Navigate">
+            
+
+              {!createdInvoiceId.includes(row.original.invoice_id) ? (
+                <Button
+                  style={{ fontSize: "12px" }}
+                  component={Link}
+                  to={`/invoice/${row.original.invoice_id}`}
+                  startIcon={<Add />}
+                >
+                  Add Bill
+                </Button>
+              ) : (
+                <Button
+                  style={{ fontSize: "12px" ,color:"green"}}
+                  component={Link}
+                  to={`/invoice/${row.original.invoice_id}`}
+                  // startIcon={<Show />}
+                >
+                  Show Bill
+                </Button>
+              )}
+            </Tooltip>
           </Box>
         )}
         renderTopToolbarCustomActions={() => (
           <Button
             color="secondary"
-            onClick={() => setCreateModalOpen(true)}
+            onClick={() => setaddBillModalOpen(true)}
             variant="contained"
           >
-            Add Product
+            Add Customer
           </Button>
         )}
       />
-      <CreateNewAccountModal
+      <AddBillModal
         columns={columns}
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
+        open={addBillModalOpen}
+        onClose={() => setaddBillModalOpen(false)}
         onSubmit={handleCreateNewRow}
+      />
+      <UpdateBillModal
+        columns={columns}
+        open={billUpdateModalOpen}
+        onClose={() => setbillUpdateModalOpen(false)}
+        onSubmit={handleSaveUpdateRowValues}
       />
     </>
   );
 };
 
-//example of creating a mui dialog modal for creating new rows
-export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
+export const UpdateBillModal = ({ open, columns, onClose, onSubmit }) => {
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
       acc[column.accessorKey ?? ""] = "";
@@ -272,7 +323,74 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
     onSubmit(values);
     onClose();
   };
-  const columnsToCheck = ["display_id", "created_at", "total", "bill"];
+  const columnsToCheck = [
+    "display_id",
+    "created_at",
+    "total",
+    "bill",
+    "invoice_id",
+  ];
+
+  return (
+    <Dialog open={open}>
+      <DialogTitle textAlign="center">Update Invoice</DialogTitle>
+      <DialogContent>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <Stack
+            sx={{
+              width: "100%",
+              minWidth: { xs: "300px", sm: "360px", md: "400px" },
+              gap: "1.5rem",
+            }}
+          >
+            {columns.map((column) => {
+              if (columnsToCheck.includes(column.accessorKey)) {
+                return null;
+              }
+
+              return (
+                <TextField
+                  key={column.accessorKey}
+                  label={column.header}
+                  name={column.accessorKey}
+                  onChange={(e) =>
+                    setValues({ ...values, [e.target.name]: e.target.value })
+                  }
+                />
+              );
+            })}
+          </Stack>
+        </form>
+      </DialogContent>
+      <DialogActions sx={{ p: "1.25rem" }}>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button color="secondary" onClick={handleSubmit} variant="contained">
+          Update Invoice
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+export const AddBillModal = ({ open, columns, onClose, onSubmit }) => {
+  const [values, setValues] = useState(() =>
+    columns.reduce((acc, column) => {
+      acc[column.accessorKey ?? ""] = "";
+      return acc;
+    }, {})
+  );
+
+  const handleSubmit = () => {
+    //put your validation logic here
+    onSubmit(values);
+    onClose();
+  };
+  const columnsToCheck = [
+    "display_id",
+    "created_at",
+    "total",
+    "bill",
+    "invoice_id",
+  ];
 
   return (
     <Dialog open={open}>
@@ -296,10 +414,10 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
                 }
               />
             ))} */}
-            
+
             {columns.map((column) => {
               if (columnsToCheck.includes(column.accessorKey)) {
-                return null; 
+                return null;
               }
 
               return (
@@ -313,8 +431,6 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
                 />
               );
             })}
-
-
           </Stack>
         </form>
       </DialogContent>
