@@ -74,6 +74,7 @@ const Home = () => {
   const [totalQuantity, setTotalQuantity] = useState("-");
   const [stockOutQuantity, setStockOutQuantity] = useState("-");
   const [inStockQuantity, setInStockQuantity] = useState("-");
+  // const [filteredItems, setFilteredItems] = useState([]);
 
   useEffect(() => {
     getProductNameList();
@@ -86,6 +87,17 @@ const Home = () => {
       product_id: p.product_id,
     };
   });
+  //  useEffect(() => {
+  //   const filteredItems = productList.map((p, i) => {
+  //     return {
+  //       id: i,
+  //       name: p.product_name,
+  //       product_id: p.product_id,
+  //     };
+  //   });
+  //   setFilteredItems(filteredItems)
+   
+  //  }, [productList]);
 
   const formatResult = (item) => {
     return (

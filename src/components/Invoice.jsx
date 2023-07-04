@@ -127,7 +127,9 @@ const Invoice = () => {
   };
 
   const handleSaveUpdateRowValues = async (values) => {
-    if (values.discount <= 100 && values.discount >= 0) {
+    const productDetails = await getSelectedProductDetails(values.product_id);
+
+    if (values.discount <= 100 && values.discount >= 0 && productDetails.quantity >= values.quantity) {
       const subtotal = values.unit_price * values.quantity;
       const total = subtotal - subtotal * (values.discount / 100);
       const newData = {
@@ -137,24 +139,24 @@ const Invoice = () => {
         ...values,
       };
 
-      const oldQuantity = tableData[selectedProductDetailsRow.rowId].quantity;
-      const newQuantity = newData.quantity;
+      // const oldQuantity = tableData[selectedProductDetailsRow.rowId].quantity;
+      // const newQuantity = newData.quantity;
 
-      const productDetails = await getSelectedProductDetails(values.product_id);
+      // const productDetails = await getSelectedProductDetails(values.product_id);
 
-      if (productDetails.quantity >= values.quantity) {
-        if (oldQuantity < newQuantity) {
-          addStockOutProductQuantity({
-            ...newData,
-            quantity: newQuantity - oldQuantity,
-          });
-        } else if (oldQuantity > newQuantity) {
-          reduceStockOutProductQuantity({
-            ...newData,
-            quantity: oldQuantity - newQuantity,
-          });
-        }
-      }
+      // if (productDetails.quantity >= values.quantity) {
+        // if (oldQuantity < newQuantity) {
+        //   addStockOutProductQuantity({
+        //     ...newData,
+        //     quantity: newQuantity - oldQuantity,
+        //   });
+        // } else if (oldQuantity > newQuantity) {
+        //   reduceStockOutProductQuantity({
+        //     ...newData,
+        //     quantity: oldQuantity - newQuantity,
+        //   });
+        // }
+      // }
 
       const { message, status } = await updateProductDetailsTableData(newData);
 
@@ -187,7 +189,7 @@ const Invoice = () => {
         ...values,
       };
 
-      await addStockOutProductQuantity(newData);
+      // await addStockOutProductQuantity(newData);
       const { message, data, status } = await addProductDetailsTableData(
         newData
       );
@@ -206,7 +208,7 @@ const Invoice = () => {
 
   const handleDeleteRow = (id, rowId, values) => {
     deleteProductDetailsTableData(id);
-    reduceStockOutProductQuantity(values);
+    // reduceStockOutProductQuantity(values);
 
     tableData.splice(rowId, 1);
     setTableData([...tableData]);

@@ -19,28 +19,28 @@ const VehicleProductAddDialogBox = ({ open, columns, onClose, onSubmit }) => {
     (state) => state.getProductNameList
   );
   const productList = useStoreState((state) => state.productList);
-  const alreadyAddedProducts = useStoreState((state) => state.alreadyAddedProducts);
-  const [filterdProducts,setFilterdProducts] =  useState([])
+  const alreadyAddedProducts = useStoreState(
+    (state) => state.alreadyAddedProducts
+  );
+  const [filterdProducts, setFilterdProducts] = useState([]);
   const [values, setValues] = useState({});
   const [formData, setFormData] = useState({});
-  const [unitPrice,setUnitPrice] =  useState("0.00");
-
+  const [unitPrice, setUnitPrice] = useState("0.00");
 
   useEffect(() => {
     getProductNameList();
-    
   }, []);
 
-  useEffect(() => {
-  }, [productList]);
+  useEffect(() => {}, [productList]);
 
   useEffect(() => {
-    const notAddedProducts = productList.filter((product) => !alreadyAddedProducts.includes(product.product_name))
-  .map((product) => product);
-  setFilterdProducts(notAddedProducts)
-    setFormData({})
+    const notAddedProducts = productList
+      .filter((product) => !alreadyAddedProducts.includes(product.product_name))
+      .map((product) => product);
+    setFilterdProducts(notAddedProducts);
+    setFormData({});
   }, [alreadyAddedProducts]);
- 
+
   const handleSubmit = () => {
     onSubmit(values);
     onClose();
@@ -52,7 +52,7 @@ const VehicleProductAddDialogBox = ({ open, columns, onClose, onSubmit }) => {
       ...prevValues,
       [name]: value,
       ...formData,
-      unit_price:unitPrice
+      // unit_price: unitPrice,
     }));
   };
 
@@ -61,7 +61,7 @@ const VehicleProductAddDialogBox = ({ open, columns, onClose, onSubmit }) => {
     const selectedProduct = filterdProducts.find(
       (product) => product.product_name === value
     );
-    
+
     // setUnitPrice(selectedProduct.cost_price)
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -71,7 +71,7 @@ const VehicleProductAddDialogBox = ({ open, columns, onClose, onSubmit }) => {
     setValues((prevValues) => ({
       ...prevValues,
       product_id: selectedProduct.product_id,
-      product_name: selectedProduct.product_name
+      product_name: selectedProduct.product_name,
     }));
   };
 
@@ -107,12 +107,20 @@ const VehicleProductAddDialogBox = ({ open, columns, onClose, onSubmit }) => {
                           </MenuItem>
                         );
                       })}
-                     
                     </Select>
                   </FormControl>
                 );
               }
-            
+              if (column.accessor === "quantity") {
+                return (
+                  <TextField
+                    key={i}
+                    label={column.header}
+                    name={column.accessor}
+                    onChange={handleInputChange}
+                  />
+                );
+              }
             })}
           </Stack>
         </form>

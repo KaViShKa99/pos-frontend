@@ -84,11 +84,10 @@ const VehicleProducts = () => {
   const setInvoiceEditSelectedProduct = useStoreActions(
     (state) => state.setInvoiceEditSelectedProduct
   );
-  const addVehicleItem = useStoreActions(
-    (state) => state.addVehicleItem
-  );
-  const reduceVehicleItem = useStoreActions(
-    (state) => state.reduceVehicleItem
+  const addVehicleItem = useStoreActions((state) => state.addVehicleItem);
+  const reduceVehicleItem = useStoreActions((state) => state.reduceVehicleItem);
+  const getSelectedProductDetails = useStoreActions(
+    (state) => state.getSelectedProductDetails
   );
 
   useEffect(() => {
@@ -109,37 +108,52 @@ const VehicleProducts = () => {
   // }, [selectedManageInvoice.invoice]);
 
   useEffect(() => {
-    
-  const productNames = tableData.map((product)=>product.product_name)
-  setAlreadyAddedProducts(productNames)
+    const productNames = tableData.map((product) => product.product_name);
+    setAlreadyAddedProducts(productNames);
   }, [tableData]);
 
- 
   const handleCreateNewRow = async (values) => {
-   
+    const productDetails = await getSelectedProductDetails(values.product_id);
 
+
+    if (productDetails.quantity >= values.quantity) {
       const newData = {
         vehicleNumber: id,
+        quantity: values.quantity,
         ...values,
       };
 
-      const { message, data } = await addVehicleProductDetailsTableData(newData);
+      const { message, data } = await addVehicleProductDetailsTableData(
+        newData
+      );
       toast.success(message, { autoClose: 1500 });
-      // addStockOutProductQuantity(newData);
-      addVehicleItem(id)
+
+      addVehicleItem(id);
       setTableData([...tableData, data]);
+
+      await addStockOutProductQuantity(newData);
+
+    } else {
+      toast.error(`Quantity should be less than ${productDetails.quantity}`, {
+        autoClose: 1500,
+      });
+    }
+
+    // addStockOutProductQuantity(newData);
+    // addVehicleItem(id)
+    // setTableData([...tableData, data]);
     // } else {
     //   toast.error("Discount should be less than 100%", { autoClose: 1500 });
     // }
   };
 
-  const handleDeleteRow = (deleteid, rowId) => {
+  const handleDeleteRow = (values,deleteid, rowId) => {
     deleteVehicleProductDetailsTableData(deleteid);
-    reduceVehicleItem(id)
+    reduceVehicleItem(id);
+    reduceStockOutProductQuantity(values)
     tableData.splice(rowId, 1);
     setTableData([...tableData]);
   };
-  
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -169,7 +183,6 @@ const VehicleProducts = () => {
           >
             Add PRODUCT
           </Button>
-          
         </div>
 
         <div className="container">
@@ -191,6 +204,7 @@ const VehicleProducts = () => {
             <thead>
               <tr>
                 <th>Product</th>
+                <th>Quantity</th>
                 {/* <th>Quantity</th>
                 <th>Price</th>
                 <th>Sub Total</th>
@@ -207,6 +221,7 @@ const VehicleProducts = () => {
                 return (
                   <tr key={i}>
                     <td>{product.product_name}</td>
+                    <td>{product.quantity}</td>
                     {/* <td>{product.quantity}</td>
                     <td>{product.unit_price}</td>
                     <td>{subtotal}</td>
@@ -216,7 +231,7 @@ const VehicleProducts = () => {
                       <IconButton
                         color="error"
                         onClick={() =>
-                          handleDeleteRow(product.vehicle_product_id, i)
+                          handleDeleteRow(product,product.vehicle_product_id, i)
                         }
                       >
                         <Delete />
@@ -257,7 +272,6 @@ const VehicleProducts = () => {
         onClose={() => setCreateModalOpen(false)}
         onSubmit={handleCreateNewRow}
       />
-      
     </div>
   );
 };

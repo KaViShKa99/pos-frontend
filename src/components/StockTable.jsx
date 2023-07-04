@@ -57,6 +57,7 @@ const StockTable = () => {
     getStockTableData();
   }, []);
 
+
   useEffect(() => {
     if (stcokTableData.tabaleData) {
       const fetchData = async () => {
@@ -66,8 +67,8 @@ const StockTable = () => {
               item.product_id
             );
             const stockOutProduct = await getSearchStockOutProductDetails(
-              item.product_id
-            );
+                item.product_id
+              );
             const total = selectedProductDetails.quantity;
             const stockOut = stockOutProduct.quantity;
             const iStock = total - stockOut
@@ -79,7 +80,6 @@ const StockTable = () => {
           })
         );
         setTableData(updatedTableData);
-        // setTableData(stcokTableData.tabaleData);
       };
 
       fetchData();
