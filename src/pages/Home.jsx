@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import Table from "../components/StockTable";
 import VehicleManageTable from "../components/VehicleManageTable";
+import UserManageTable from "../components/UserManageTable";
 import "../styles/home.css";
 import Nav from "../components/NavBar";
 import { useStoreState, useStoreActions } from "easy-peasy";
@@ -179,23 +180,24 @@ const Home = () => {
       </div>
 
       <div className="stock-table">
-        <p className="products-table-title">PRODUCTS</p>
+        <p className="table-title">PRODUCTS</p>
         {/* <p className="products-table-title">{t("products")}</p> */}
         <Table />
       </div>
       <div className="vehicle-manage-container">
-        <p className="products-table-title">MANAGE VEHICLES</p>
+        <p className="table-title">MANAGE VEHICLES</p>
         <div className="vehicle-table">
           <VehicleManageTable />
         </div>
 
-        {/* <Multiselect
-          options={filteredItems} // Options to display in the dropdown
-          // selectedValues={this.state.selectedValue} // Preselected value to persist in dropdown
-          // onSelect={this.onSelect} // Function will trigger on select event
-          // onRemove={this.onRemove} // Function will trigger on remove event
-          displayValue="name" // Property name to display in the dropdown options
-        /> */}
+      </div>
+
+      <div className="user-manage-container">
+        <p className="table-title">MANAGE USERS</p>
+        <div className="vehicle-table">
+          <UserManageTable />
+        </div>
+
       </div>
     </div>
   );

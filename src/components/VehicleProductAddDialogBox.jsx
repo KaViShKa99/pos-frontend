@@ -10,11 +10,16 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Autocomplete,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useStoreState, useStoreActions } from "easy-peasy";
+import singlishKeywords from "../languages/products.json"
 
 const VehicleProductAddDialogBox = ({ open, columns, onClose, onSubmit }) => {
+  
+  const singlishProductList = Object.keys(singlishKeywords);
+
   const getProductNameList = useStoreActions(
     (state) => state.getProductNameList
   );
@@ -75,6 +80,16 @@ const VehicleProductAddDialogBox = ({ open, columns, onClose, onSubmit }) => {
     }));
   };
 
+  const top100Films = [
+    { label: 'The Shawshank Redemption', year: 1994 },
+    { label: 'The Godfather', year: 1972 },
+    { label: 'The Godfather: Part II', year: 1974 },
+    { label: 'The Dark Knight', year: 2008 },
+    { label: '12 Angry Men', year: 1957 },
+    { label: "Schindler's List", year: 1993 },
+    { label: 'Pulp Fiction', year: 1994 },
+  ]
+
   return (
     <Dialog open={open}>
       <DialogTitle textAlign="center">Vehicle Products</DialogTitle>
@@ -91,7 +106,7 @@ const VehicleProductAddDialogBox = ({ open, columns, onClose, onSubmit }) => {
               if (column.accessor === "product_name") {
                 return (
                   <FormControl key={i} style={{ marginTop: "10px" }}>
-                    <InputLabel>{column.header}</InputLabel>
+                    {/* <InputLabel>{column.header}</InputLabel>
                     <Select
                       key={i}
                       label={column.header}
@@ -107,7 +122,17 @@ const VehicleProductAddDialogBox = ({ open, columns, onClose, onSubmit }) => {
                           </MenuItem>
                         );
                       })}
-                    </Select>
+                    </Select> */}
+
+                    <Autocomplete
+                      disablePortal
+                      id="combo-box-demo"
+                      options={top100Films}
+                      sx={{ width: 400 }}
+                      renderInput={(params) => (
+                        <TextField {...params} label="products" />
+                      )}
+                    />
                   </FormControl>
                 );
               }

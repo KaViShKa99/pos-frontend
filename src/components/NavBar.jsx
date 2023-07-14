@@ -350,7 +350,6 @@ export default function PrimarySearchAppBar({ notification }) {
                 {token === "admin" && currentPath === '/' && <span
                   style={{
                     marginLeft: "10px",
-                    fontSize: "20px",
                     backgroundColor: "#4CAF50",
                     border: "none",
                     color: "white",

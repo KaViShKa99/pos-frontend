@@ -5,6 +5,7 @@ export default {
     manageInvoiceTableDataUpdateID: {},
     stcokTableData: {},
     manageVehiclesTableData: {},
+    manageUserTableData: {},
     ProductDetailsTableData: {},
     vehicleProductDetailsTableData: {},
     selectedManageInvoice: {},
@@ -524,6 +525,75 @@ export default {
 
             return;
         }
-    })
+    }),
+    addUserTableData: thunk(async(actions, addData) => {
+        try {
+            let response = await sendRequest("/users", "POST", addData);
+
+            let responseText = await response.text();
+            if (!response.ok) {
+                let gg = JSON.parse(responseText).message;
+                throw new Error(gg);
+            }
+
+            // return JSON.parse(responseText).message;
+            return JSON.parse(responseText);
+        } catch (error) {
+            alert(error.message);
+
+            return;
+        }
+    }),
+    setUserTableData: action((state, data) => {
+        state.manageUserTableData = {
+            tabaleData: data,
+        };
+    }),
+    getUserTableData: thunk(async(actions) => {
+        const res = await sendGetRequest("/users");
+        const data = await res.json();
+        actions.setUserTableData(data);
+    }),
+    updateUserTableData: thunk(async(actions, updateData) => {
+        try {
+            let response = await sendRequest(
+                `/users/${updateData.user_id}`,
+                "PUT",
+                updateData
+            );
+
+            let responseText = await response.text();
+            if (!response.ok) {
+                let gg = JSON.parse(responseText).message;
+                throw new Error(gg);
+            }
+
+            return;
+        } catch (error) {
+            alert(error.message);
+
+            return;
+        }
+    }),
+    deleteUserTableData: thunk(async(actions, userId) => {
+        let response;
+        if (userId != 0) {
+            try {
+                response = await sendRequest(
+                    `/users/${userId}`,
+                    "DELETE", {
+                        userId: userId,
+                    }
+                );
+            } catch (error) {
+                console.log(error.message);
+                alert(error.message);
+                // actions.setMessage(error.message)
+
+                return error;
+            }
+        }
+        return response;
+    }),
 
 };
