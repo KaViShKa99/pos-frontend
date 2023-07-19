@@ -14,10 +14,9 @@ import {
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useStoreState, useStoreActions } from "easy-peasy";
-import singlishKeywords from "../languages/products.json"
+import singlishKeywords from "../languages/products.json";
 
 const VehicleProductAddDialogBox = ({ open, columns, onClose, onSubmit }) => {
-  
   const singlishProductList = Object.keys(singlishKeywords);
 
   const getProductNameList = useStoreActions(
@@ -32,6 +31,18 @@ const VehicleProductAddDialogBox = ({ open, columns, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({});
   const [unitPrice, setUnitPrice] = useState("0.00");
 
+  const findKeywordByValue = (value) => {
+    
+    for (const keyword in singlishKeywords) {
+      if (singlishKeywords[keyword] === value) {
+        return keyword;
+      }
+    }
+    return '' ;
+  };
+
+  // const keyword = findKeywordByValue(value);
+
   useEffect(() => {
     getProductNameList();
   }, []);
@@ -41,8 +52,16 @@ const VehicleProductAddDialogBox = ({ open, columns, onClose, onSubmit }) => {
   useEffect(() => {
     const notAddedProducts = productList
       .filter((product) => !alreadyAddedProducts.includes(product.product_name))
-      .map((product) => product);
+      .map((product) => ({
+        product_id:product.product_id,
+        label: findKeywordByValue(product.product_name),
+        product_name: product.product_name,
+      }));
+
+    // setFilterdProducts(notAddedProducts);
+
     setFilterdProducts(notAddedProducts);
+
     setFormData({});
   }, [alreadyAddedProducts]);
 
@@ -56,7 +75,7 @@ const VehicleProductAddDialogBox = ({ open, columns, onClose, onSubmit }) => {
     setValues((prevValues) => ({
       ...prevValues,
       [name]: value,
-      ...formData,
+      // ...formData,
       // unit_price: unitPrice,
     }));
   };
@@ -80,15 +99,19 @@ const VehicleProductAddDialogBox = ({ open, columns, onClose, onSubmit }) => {
     }));
   };
 
-  const top100Films = [
-    { label: 'The Shawshank Redemption', year: 1994 },
-    { label: 'The Godfather', year: 1972 },
-    { label: 'The Godfather: Part II', year: 1974 },
-    { label: 'The Dark Knight', year: 2008 },
-    { label: '12 Angry Men', year: 1957 },
-    { label: "Schindler's List", year: 1993 },
-    { label: 'Pulp Fiction', year: 1994 },
-  ]
+
+  const productSelect = (e,value) => {
+    if(value){
+
+      setValues((prevValues) => ({
+        ...prevValues,
+      product_id: value.product_id,
+      product_name: value.product_name,
+      }));
+    }
+  
+    
+  }
 
   return (
     <Dialog open={open}>
@@ -127,12 +150,21 @@ const VehicleProductAddDialogBox = ({ open, columns, onClose, onSubmit }) => {
                     <Autocomplete
                       disablePortal
                       id="combo-box-demo"
-                      options={top100Films}
+                      options={filterdProducts}
                       sx={{ width: 400 }}
                       renderInput={(params) => (
                         <TextField {...params} label="products" />
                       )}
-                    />
+
+                      onChange={productSelect}
+                      isOptionEqualToValue={(option, value) =>
+                        option.product_id === value.product_id 
+                        
+                        // &&
+                        // option.label === value.label &&
+                        // option.product_name === value.product_name
+                      }                   
+                       />
                   </FormControl>
                 );
               }

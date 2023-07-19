@@ -10,9 +10,11 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Autocomplete
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useStoreState, useStoreActions } from "easy-peasy";
+import singlishKeywords from "../languages/products.json";
 
 const DialogBox = ({ open, columns, onClose, onSubmit }) => {
   const getProductNameList = useStoreActions(
@@ -25,6 +27,15 @@ const DialogBox = ({ open, columns, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({});
   const [unitPrice,setUnitPrice] =  useState("0.00");
 
+  const findKeywordByValue = (value) => {
+    
+    for (const keyword in singlishKeywords) {
+      if (singlishKeywords[keyword] === value) {
+        return keyword;
+      }
+    }
+    return '' ;
+  };
 
   useEffect(() => {
     getProductNameList();
@@ -35,8 +46,17 @@ const DialogBox = ({ open, columns, onClose, onSubmit }) => {
   }, [productList]);
 
   useEffect(() => {
-    const notAddedProducts = productList.filter((product) => !alreadyAddedProducts.includes(product.product_name))
-  .map((product) => product);
+  //   const notAddedProducts = productList.filter((product) => !alreadyAddedProducts.includes(product.product_name))
+  // .map((product) => product);
+
+  const notAddedProducts = productList
+      .filter((product) => !alreadyAddedProducts.includes(product.product_name))
+      .map((product) => ({
+        product_id:product.product_id,
+        label: findKeywordByValue(product.product_name),
+        product_name: product.product_name,
+        cost_price:product.cost_price
+      }));
   setFilterdProducts(notAddedProducts)
     setFormData({})
   }, [alreadyAddedProducts]);
@@ -73,6 +93,22 @@ const DialogBox = ({ open, columns, onClose, onSubmit }) => {
     }));
   };
 
+  const productSelect = (e,value) => {
+    if(value){
+      setUnitPrice(value.cost_price)
+
+      setValues((prevValues) => ({
+        ...prevValues,
+      product_id: value.product_id,
+      product_name: value.product_name,
+      }));
+    }else {
+      setUnitPrice('0.00')
+    }
+  
+    
+  }
+
   return (
     <Dialog open={open}>
       <DialogTitle textAlign="center">Bill</DialogTitle>
@@ -89,7 +125,7 @@ const DialogBox = ({ open, columns, onClose, onSubmit }) => {
               if (column.accessor === "product_name") {
                 return (
                   <FormControl key={i} style={{ marginTop: "10px" }}>
-                    <InputLabel>{column.header}</InputLabel>
+                    {/* <InputLabel>{column.header}</InputLabel>
                     <Select
                       key={i}
                       label={column.header}
@@ -106,7 +142,26 @@ const DialogBox = ({ open, columns, onClose, onSubmit }) => {
                         );
                       })}
                      
-                    </Select>
+                    </Select> */}
+
+                    <Autocomplete
+                      disablePortal
+                      id="combo-box-demo"
+                      options={filterdProducts}
+                      sx={{ width: 400 }}
+                      renderInput={(params) => (
+                        <TextField {...params} label="products" />
+                      )}
+
+                      onChange={productSelect}
+                      isOptionEqualToValue={(option, value) =>
+                        option.product_id === value.product_id 
+                        
+                        // &&
+                        // option.label === value.label &&
+                        // option.product_name === value.product_name
+                      }                   
+                       />
                   </FormControl>
                 );
               }
