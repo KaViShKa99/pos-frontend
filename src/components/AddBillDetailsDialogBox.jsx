@@ -63,7 +63,6 @@ const DialogBox = ({ open, columns, onClose, onSubmit }) => {
  
 
   
-
   const handleSubmit = () => {
     onSubmit(values);
     onClose();
