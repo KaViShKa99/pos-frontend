@@ -16,12 +16,14 @@ import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useNavigate,useLocation  } from 'react-router-dom';
+import { useNavigate, useLocation } from "react-router-dom";
+import Logo from "../assets/logo.png";
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#FFA500",
+      // main: "#FFA500",
+      main: "#ff6d32",
     },
   },
   components: {
@@ -76,12 +78,11 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function PrimarySearchAppBar({ notification }) {
-  
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
 
-  const token  = localStorage.getItem("token")
+  const token = localStorage.getItem("token");
   const [arr, setArr] = useState([notification]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -100,12 +101,12 @@ export default function PrimarySearchAppBar({ notification }) {
     // setNotificationMenuOpen(Boolean(event.currentTarget));
     notification && setAnchorEl(event.currentTarget);
   };
-  const handleSalsemangerView = ()=>{
-    navigate('/sales-manager-home')
-  }
-  const handleHomeView = ()=>{
-    navigate('/')
-  }
+  const handleSalsemangerView = () => {
+    navigate("/sales-manager-home");
+  };
+  const handleHomeView = () => {
+    navigate("/");
+  };
 
   const handleCloseNotifications = (id) => {
     // setAnchorEl(null);
@@ -335,6 +336,15 @@ export default function PrimarySearchAppBar({ notification }) {
             >
               POS
             </Typography>
+
+            <Box
+              component="img"
+              sx={{
+                height: 64,
+              }}
+              alt="Your logo."
+              src={Logo}
+            />
             {/* <Search>
             <SearchIconWrapper>
               <SearchIcon />
@@ -346,8 +356,8 @@ export default function PrimarySearchAppBar({ notification }) {
           </Search> */}
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
-        
-                {token === "admin" && currentPath === '/' && <span
+              {token === "admin" && currentPath === "/" && (
+                <span
                   style={{
                     marginLeft: "10px",
                     backgroundColor: "#4CAF50",
@@ -365,9 +375,11 @@ export default function PrimarySearchAppBar({ notification }) {
                   onClick={handleSalsemangerView}
                 >
                   Go to Sales Manager
-                </span>}
+                </span>
+              )}
 
-                {token === "admin" && currentPath !== '/' && <span
+              {token === "admin" && currentPath !== "/" && (
+                <span
                   style={{
                     marginLeft: "10px",
                     fontSize: "20px",
@@ -386,8 +398,9 @@ export default function PrimarySearchAppBar({ notification }) {
                   onClick={handleHomeView}
                 >
                   Go to Home
-                </span>}
-              
+                </span>
+              )}
+
               <IconButton
                 size="large"
                 aria-label="show 15 new notifications"

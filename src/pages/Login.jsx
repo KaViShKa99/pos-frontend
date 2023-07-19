@@ -5,22 +5,47 @@ import { useStoreActions,useStoreState } from 'easy-peasy';
 
 
 const Login = () => {
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [ userCredentials, setUserCredentials] = useState([])
   const navigate = useNavigate();
   
-
-  const userRole = useStoreState((state) => state.userRole);
-
-  const userCredentials = [
-    { uname: 'u2', pswrd: '2' },
-    { uname: 'u1', pswrd: '1' },
+  const manageUserTableData = useStoreState(
+    (state) => state.manageUserTableData
+  );
+  const usersList = useStoreState(
+    (state) => state.usersList
+  );
+  
+  const getUserTableData = useStoreActions(
+    (actions) => actions.getUserTableData
+    );
     
-  ];
+    useEffect(() => {
+      getUserTableData();
+      
+    }, [])
+    
+    
+    useEffect(() => {
+      if (manageUserTableData.tabaleData) {
+      setUserCredentials(manageUserTableData.tabaleData)
+    }
+  }, [manageUserTableData.tabaleData]);
+
+ 
+  
+
+  // const userCredentials = [
+  //   { uname: 'u2', pswrd: '2' },
+  //   { uname: 'u1', pswrd: '1' },
+    
+  // ];
 
   const isValidCredentials = userCredentials.some(
-    ({ uname, pswrd }) => uname === username && pswrd === password
+    ({ user_name, password }) => user_name === username && password === password
   );
   
 

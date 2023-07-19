@@ -15,6 +15,7 @@ export default {
     createdVehicleNumberList: {},
     alreadyAddedProducts: [],
     invoiceEditSelectedProduct: [],
+    usersList: [],
 
 
 
@@ -595,5 +596,10 @@ export default {
         }
         return response;
     }),
+    setUsers: action((state, data) => {
+        state.usersList = data;
+    }),
+
+
 
 };

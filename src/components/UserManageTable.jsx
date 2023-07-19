@@ -26,6 +26,9 @@ const VehicleManageTable = () => {
   const getUserTableData = useStoreActions(
     (actions) => actions.getUserTableData
   );
+  const setUsers = useStoreActions(
+    (actions) => actions.setUsers
+  );
   const deleteUserTableData = useStoreActions(
     (actions) => actions.deleteUserTableData
   );
@@ -63,14 +66,14 @@ const VehicleManageTable = () => {
     getCreatedVehicleNumberList();
   }, []);
 
-  useEffect(() => {
-    if (createdVehicleNumberList) {
-      const vehicleNumbers = Object.values(createdVehicleNumberList).map(
-        (data) => data.vehicle_number
-      );
-      setCreatedVehicleNumbers(vehicleNumbers);
-    }
-  }, [createdVehicleNumberList]);
+  // useEffect(() => {
+  //   if (createdVehicleNumberList) {
+  //     const vehicleNumbers = Object.values(createdVehicleNumberList).map(
+  //       (data) => data.vehicle_number
+  //     );
+  //     setCreatedVehicleNumbers(vehicleNumbers);
+  //   }
+  // }, [createdVehicleNumberList]);
 
   useEffect(() => {
     if (manageUserTableData.tabaleData) {
@@ -88,6 +91,7 @@ const VehicleManageTable = () => {
     if (status === "success") {
       toast.success(message, { autoClose: 1500 });
       setTableData([...tableData, data]);
+      setUsers([...tableData, data])
     } else if((status === "error")) {
       toast.error(message, { autoClose: 1500 });
     }
@@ -117,7 +121,6 @@ const VehicleManageTable = () => {
         return;
       }
       deleteUserTableData(row.original.user_id);
-      // console.log("🚀 ~ file: UserManageTable.jsx:116 ~ VehicleManageTable ~ row.original.user_id:", row.original.user_id)
 
       tableData.splice(row.index, 1);
       setTableData([...tableData]);

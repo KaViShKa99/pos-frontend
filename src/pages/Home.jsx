@@ -19,11 +19,23 @@ import {
   TextField,
 } from "@mui/material";
 import io from "socket.io-client";
+import singlishKeywords from "../languages/products.json";
+
 
 const socket = io("http://127.0.0.1:3333");
 const Home = () => {
   const { t } = useTranslation();
   const [notification, setNotification] = useState([]);
+
+  const findKeywordByValue = (value) => {
+    
+    for (const keyword in singlishKeywords) {
+      if (singlishKeywords[keyword] === value) {
+        return keyword;
+      }
+    }
+    return '' ;
+  };
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -84,7 +96,8 @@ const Home = () => {
   const filteredItems = productList.map((p, i) => {
     return {
       id: i,
-      name: p.product_name,
+      // name: p.product_name,
+      name: findKeywordByValue(p.product_name),
       product_id: p.product_id,
     };
   });
@@ -142,6 +155,8 @@ const Home = () => {
 
       <div className="stock-details">
         <div className="search-bar">
+
+
           <ReactSearchAutocomplete
             items={filteredItems}
             onSearch={handleOnSearch}
@@ -152,6 +167,8 @@ const Home = () => {
             formatResult={formatResult}
             placeholder="search"
           />
+
+
         </div>
 
         <div className="in-stock-container">
