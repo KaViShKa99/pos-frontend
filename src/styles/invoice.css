@@ -89,18 +89,31 @@ table th {
 }
 
 .display-bill {
+    display: flex;
+    flex-direction: column;    
+    align-items: center;
     padding: 50px 50px 50px 50px;
 }
 
 .bill-table-title {
-    display: flex;
+    /* display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center; */
     font-size: 35px;
     color: #889874;
     padding-bottom: 20px;
+    /* padding-top: 20px; */
 }
 
 .btns {
+    margin: 0 auto;
+    width: 600px;
     padding-bottom: 20px;
+    padding-top: 20px;
+}
+.search{
+    width:600px;
+    padding-bottom: 20px;
+    z-index: 1000;
+   
 }

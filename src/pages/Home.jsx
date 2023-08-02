@@ -173,8 +173,8 @@ const Home = () => {
 
         <div className="in-stock-container">
           <div className="in-stock-title">
-            <span className="title">In Stock</span>
-            {/* <span className="title">{t("inStock")}</span> */}
+            {/* <span className="title">In Stock</span> */}
+            <span className="title">{t("inStock")}</span>
           </div>
           <div className="in-stock-value">
             <span className="value">{inStockQuantity}</span>
@@ -182,16 +182,16 @@ const Home = () => {
         </div>
         <div className="stock-out-container">
           <div className="stock-out-title">
-            <span className="title">Stock Out</span>
-            {/* <span className="title">{t("stockOut")}</span> */}
+            {/* <span className="title">Stock Out</span> */}
+            <span className="title">{t("stockOut")}</span>
           </div>
           <div className="stock-out-value">
             <span className="value">{stockOutQuantity}</span>
           </div>
         </div>
         <div className="total-container">
-          <span className="total-title">Total</span>
-          {/* <span className="total-title">{t("total")}</span> */}
+          {/* <span className="total-title">Total</span> */}
+          <span className="total-title">{t("total")}</span>
           <span className="total-value">{totalQuantity}</span>
         </div>
       </div>

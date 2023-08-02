@@ -293,7 +293,7 @@ const StockTable = () => {
         enableHiding={false}
         enableResetOrder={false}
         initialState={{
-          columnVisibility: { product_id: false ,inStock:false},
+          columnVisibility: { product_id: false },
           density: "compact",
         }}
         columns={columns}

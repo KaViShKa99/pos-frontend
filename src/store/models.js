@@ -355,6 +355,11 @@ export default {
         const data = await res.json();
         return data;
     }),
+    getProductQuantityDetails: thunk(async(actions, id) => {
+        const res = await sendGetRequest(`/stocks/quntity-details/${id}`);
+        const data = await res.json();
+        return data;
+    }),
     getSearchStockOutProductDetails: thunk(async(actions, id) => {
         const res = await sendGetRequest(`/stock-out/${id}`);
         const data = await res.json();
@@ -599,7 +604,11 @@ export default {
     setUsers: action((state, data) => {
         state.usersList = data;
     }),
-
+    getAddedProductQuantity: thunk(async(actions, id) => {
+        const res = await sendGetRequest(`/added-item-quantity/${id}`);
+        const data = await res.json();
+        return data;
+    }),
 
 
 };

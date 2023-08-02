@@ -328,6 +328,14 @@ export default function PrimarySearchAppBar({ notification }) {
           >
             <MenuIcon />
           </IconButton> */}
+            <Box
+              component="img"
+              sx={{
+                height: 64,
+              }}
+              alt="Your logo."
+              src={Logo}
+            />
             <Typography
               variant="h6"
               noWrap
@@ -337,14 +345,7 @@ export default function PrimarySearchAppBar({ notification }) {
               POS
             </Typography>
 
-            <Box
-              component="img"
-              sx={{
-                height: 64,
-              }}
-              alt="Your logo."
-              src={Logo}
-            />
+          
             {/* <Search>
             <SearchIconWrapper>
               <SearchIcon />

@@ -185,7 +185,7 @@ const InvoiceManageTable = () => {
       },
       {
         accessorKey: "customer_name",
-        header: "Customer Name",
+        header: "Shop Name",
         size: 80,
         
       },
@@ -290,7 +290,7 @@ const InvoiceManageTable = () => {
             onClick={() => setaddBillModalOpen(true)}
             variant="contained"
           >
-            Add Customer
+            Add Shop
           </Button>
         )}
       />
